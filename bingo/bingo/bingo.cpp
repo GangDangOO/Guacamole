@@ -25,6 +25,45 @@ mt19937 gen(rd());
 uniform_int_distribution<int> v_dis(0, 4);
 uniform_int_distribution<int> n_dis(0, 60);
 //-------------------------------------------
+int main() {
+	cout << "숫자빙고.1 단어빙고.2 입력 : ";
+	cin >> n_input;
+	if (n_input == 1) {
+		init_num_arr();
+		while (true) {
+			show_num_arr();
+			cout << "현재 빙고 : " << check_num_bingo() << endl;
+			if (check_num_bingo() >= 3) {
+				cout << "승리하셨습니다.";
+				cin >> n_input;
+				return 0;
+			}
+			cout << "숫자 입력 : ";
+			cin >> n_input;
+			cout << "-----------------------------------" << endl;
+			check_num(n_input, true);
+		}
+	}
+	else if (n_input == 2) {
+		init_input_arr();
+		while (true) {
+			show_str_arr();
+			cout << "현재 빙고 : " << check_str_bingo() << endl;
+			if (check_str_bingo() >= 3) {
+				cout << "승리하셨습니다.";
+				cin >> n_input;
+				return 0;
+			}
+			cout << "단어 입력 : ";
+			cin >> s_input;
+			cout << "-----------------------------------" << endl;
+			check_str(s_input, true);
+		}
+	}
+
+	return 0;
+}
+//-------------------------------------------
 int check_num_bingo() {
 	i = bingo = 0;
 	while (i != 5) {
@@ -212,41 +251,3 @@ void show_str_arr() {
 	}
 }
 //-------------------------------------------
-int main() {
-	cout << "숫자빙고.1 단어빙고.2 입력 : ";
-	cin >> n_input;
-	if (n_input == 1) {
-		init_num_arr();
-		while (true) {
-			show_num_arr();
-			cout << "현재 빙고 : " << check_num_bingo() << endl;
-			if (check_num_bingo() >= 3) {
-				cout << "승리하셨습니다.";
-				cin >> n_input;
-				return 0;
-			}
-			cout << "숫자 입력 : ";
-			cin >> n_input;
-			cout << "-----------------------------------" << endl;
-			check_num(n_input, true);
-		}
-	}
-	else if (n_input == 2) {
-		init_input_arr();
-		while (true) {
-			show_str_arr();
-			cout << "현재 빙고 : " << check_str_bingo() << endl;
-			if (check_str_bingo() >= 3) {
-				cout << "승리하셨습니다.";
-				cin >> n_input;
-				return 0;
-			}
-			cout << "단어 입력 : ";
-			cin >> s_input;
-			cout << "-----------------------------------" << endl;
-			check_str(s_input, true);
-		}
-	}
-
-	return 0;
-}

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "a1e0ba09-5b58-4287-96e8-905b3143a457": {
+      "ProjectGuid": "a1e0ba09-5b58-4287-96e8-905b3143a457",
+      "DisplayName": "StarArt",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
