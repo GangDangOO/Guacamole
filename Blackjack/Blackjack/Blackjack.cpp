@@ -1,6 +1,4 @@
-﻿// A는 1 고정이고 J, Q, K는 10으로 고정됨
-// 딜러는 17이상이 될때까지 계속 뽑아야함
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <random>
 #include <vector>
@@ -48,57 +46,84 @@ struct _PLAYER
 	int money = 10000;
 };
 
-void Draw_card_and_print(_CARD card, _PLAYER &player);
-void Init_card(_CARD* cards, int MAX_CARD);
-void Shuffle_card(_CARD* cards);
-
+void Draw_card_and_print(_CARD card, _PLAYER &player); // 카드뽑고 출력
+void Init_card(_CARD* cards, int MAX_CARD); // 카드초기화
+void Shuffle_card(_CARD* cards); // 카드섞기
+void Calc_point_and_money(_PLAYER* players, _PLAYER &dealer, int player_max, int money); // 점수 계산 후 돈분배
+void Clear_player_and_dealer(_PLAYER* players, _PLAYER& dealer, int player_max); // 플레이어, 딜러 카드초기화
 
 int main() {
-	int input;
+	int input, player_max;
 	_CARD cards[MAX_CARD];
-	_PLAYER player;
 	_PLAYER dealer;
-	player.name = "Player 1";
-	dealer.name = "Dealer";
+	dealer.name = "[Dealer]";
+	cout << "플레이어 인원수 : ";
+	cin >> player_max;
+	_PLAYER *player = new _PLAYER[player_max];
+	for (int i = 0; i < player_max; i++) {
+		player[i].name = "[Player ";
+		player[i].name.append(to_string(i + 1));
+		player[i].name.append("]");
+	}
 	Init_card(cards, MAX_CARD);
 	while (true) {
 		Shuffle_card(cards);
 		int i = 0;
-		for (; i < MAX_CARD; i++) {
-			Draw_card_and_print(cards[i], player);
-			if (player.point > 21) {
-				cout << "꽝" << endl;
-				player.point = 0;
-				break;
+		for (int j = 0; j < player_max; j++) {
+			for (; i < MAX_CARD; i++) {
+				Draw_card_and_print(cards[i], player[j]);
+				if (player[j].point > 21) {
+					cout << player[j].name << "버스트" << endl;
+					player[j].point = 0;
+					break;
+				}
+				cout << "카드뽑기 1.예 2.아니오";
+				cin >> input;
+				if (input == 2) {
+					i++; // 다음카드로
+					break;
+				}
 			}
-			cout << "카드뽑기 1.예 2.아니오";
-			cin >> input;
-			if (input == 2) break;
 		}
+		// 딜러 카드뽑기
 		for (; i < MAX_CARD; i++) {
-			Draw_card_and_print(cards[i], dealer);
-			if (player.point > 21) {
-				cout << "꽝" << endl;
-				dealer.point = 0;
-				break;
+			if (dealer.point <= 17) {
+				Draw_card_and_print(cards[i], dealer);
+				if (dealer.point > 21) {
+					cout << dealer.name << "버스트" << endl;
+					dealer.point = 0;
+					break;
+				}
 			}
-			if (dealer.point > 17) break;
 		}
-		player.money -= 1000;
-		if (player.point == dealer.point) {
-			cout << "무승부" << endl << "현재소지금 : " << player.money << endl;
-		} 
-		else if (player.point > dealer.point) {
-			player.money += 2000;
-			cout << "플레이어 승리! 소지금 + 2000" << endl << "현재소지금 : " << player.money << endl;
+		Calc_point_and_money(player, dealer, player_max, 1000);
+		Clear_player_and_dealer(player, dealer, player_max);
+	}
+	delete[] player;
+	return 0;
+}
+
+void Clear_player_and_dealer(_PLAYER* players, _PLAYER& dealer, int player_max) {
+	for (int i = 0; i < player_max; i++) players[i].deck.clear();
+	dealer.deck.clear();
+}
+
+void Calc_point_and_money(_PLAYER* players, _PLAYER& dealer, int player_max, int money) {
+	int winner_count = 0;
+	for (int i = 0; i < player_max; i++) {
+		players[i].money -= money;
+		if (players[i].point > dealer.point)
+			winner_count++;
+	}
+	for (int i = 0; i < player_max; i++) {
+		if (players[i].point > dealer.point) {
+			players[i].money += (money * player_max) / winner_count;
+			cout << players[i].name << "승리 소지금 : " << players[i].money << endl;
 		}
 		else {
-			cout << "플레이어 패배 소지금 - 1000 " << endl << " 현재소지금 : " << player.money << endl;
+			cout << players[i].name << "패배 소지금 : " << players[i].money << endl;
 		}
-		player.deck.clear();
-		dealer.deck.clear();
 	}
-	return 0;
 }
 
 void Draw_card_and_print(_CARD card, _PLAYER &player) {
@@ -108,8 +133,16 @@ void Draw_card_and_print(_CARD card, _PLAYER &player) {
 	for (int i = 0; i < player.deck.size(); i++) {
 		player.deck[i].Print();
 		cout << '\t';
-		if (player.deck[i].num > 10) player.point += 10;
-		else player.point += player.deck[i].num;
+		if (player.deck[i].num == 1) {
+			if (11 + player.point <= 21)
+				player.point += 11;
+			else
+				player.point += 1;
+		}
+		else {
+			if (player.deck[i].num > 10) player.point += 10;
+			else player.point += player.deck[i].num;
+		}
 	}
 	cout << player.point << endl;
 }
