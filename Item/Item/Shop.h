@@ -8,7 +8,7 @@ class Shop
 {
 public:
 	void Open_Shop();
-	void Buy_Item(Item** items, Player &player);
+	void Buy_Item(vector<Item> &items, Player &player);
 	void Sell_Item(Player &player);
 };
 
